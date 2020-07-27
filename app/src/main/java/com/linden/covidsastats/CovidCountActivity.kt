@@ -22,13 +22,8 @@ class CovidCountActivity : AppCompatActivity() {
     private val confirmed: String = "confirmed"
     private val recovered: String = "recovered"
     private val deaths: String = "deaths"
-
     private val AMOUNT_FORMAT = "###,###,###"
-
-    private var confirmedAmount: Int = 0
-    private var recoveredAmount: Int = 0
-    private var deathsAmount: Int = 0
-
+    
     @BindView(R.id.casesAmount) lateinit var casesAmount: TextView
     @BindView(R.id.recoveredCasesAmount) lateinit var recoveredCasesAmount: TextView
     @BindView(R.id.deathCasesAmount) lateinit var deathCasesAmount: TextView
@@ -56,52 +51,27 @@ class CovidCountActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun fetchCases() {
         CovidServiceImplementation.fetchInstance().getCurrentCases(confirmed)
-            .enqueue(object : Callback<List<CovidStat>> {
-                override fun onResponse(call: Call<List<CovidStat>>, response: Response<List<CovidStat>>) {
-                    if (response.code() == 200) {
-
-                        response.body()?.forEach {
-                            confirmedAmount = it.cases!!
-                            casesAmount.text = getReadableAmount(confirmedAmount)
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<List<CovidStat>>, t: Throwable) {
-                }
-            })
+            .enqueue(callback(casesAmount))
 
         CovidServiceImplementation.fetchInstance().getCurrentCases(recovered)
-            .enqueue(object : Callback<List<CovidStat>> {
-                override fun onResponse(call: Call<List<CovidStat>>, response: Response<List<CovidStat>>) {
-                    if (response.code() == 200) {
-
-                        response.body()?.forEach {
-                            recoveredAmount = it.cases!!
-                            recoveredCasesAmount.text = getReadableAmount(recoveredAmount)
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<List<CovidStat>>, t: Throwable) {
-                }
-            })
+            .enqueue(callback(recoveredCasesAmount))
 
         CovidServiceImplementation.fetchInstance().getCurrentCases(deaths)
-            .enqueue(object : Callback<List<CovidStat>> {
-                override fun onResponse(call: Call<List<CovidStat>>, response: Response<List<CovidStat>>) {
-                    if (response.code() == 200) {
+            .enqueue(callback(deathCasesAmount))
+    }
 
-                        response.body()?.forEach {
-                            deathsAmount = it.cases!!
-                            deathCasesAmount.text = getReadableAmount(deathsAmount)
-                        }
+    fun callback(casesAmountTextView: TextView): Callback<List<CovidStat>> {
+        return object : Callback<List<CovidStat>> {
+            override fun onResponse(call: Call<List<CovidStat>>, response: Response<List<CovidStat>>) {
+                if (response.code() == 200) {
+                    response.body()?.forEach {
+                        casesAmountTextView.text = getReadableAmount(it.cases!!)
                     }
                 }
+            }
 
-                override fun onFailure(call: Call<List<CovidStat>>, t: Throwable) {
-                }
-            })
+            override fun onFailure(call: Call<List<CovidStat>>, t: Throwable) {}
+        }
     }
 
     fun getReadableAmount(amount: Int): String {
