@@ -18,7 +18,7 @@ class CovidServiceImplementation {
         private val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         private var instance: CovidServiceImplementation? = null
 
-        fun newInstance(): CovidServiceImplementation {
+        fun fetchInstance(): CovidServiceImplementation {
             return if (instance != null) {
                 instance as CovidServiceImplementation
             } else {
