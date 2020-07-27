@@ -20,6 +20,6 @@ class CovidStat {
     var cityCode: String? = null
 
     @SerializedName("Cases")
-    var cases: Int ? = 0
+    var cases: Int? = 0
 
 }
