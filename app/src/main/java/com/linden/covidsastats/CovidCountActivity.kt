@@ -22,12 +22,16 @@ class CovidCountActivity : AppCompatActivity() {
     private val confirmed: String = "confirmed"
     private val recovered: String = "recovered"
     private val deaths: String = "deaths"
-    private val AMOUNT_FORMAT = "###,###,###"
-    
-    @BindView(R.id.casesAmount) lateinit var casesAmount: TextView
-    @BindView(R.id.recoveredCasesAmount) lateinit var recoveredCasesAmount: TextView
-    @BindView(R.id.deathCasesAmount) lateinit var deathCasesAmount: TextView
-    @BindView(R.id.swipeToRefresh) lateinit var swipeToRefresh: SwipeRefreshLayout
+    private val amountFormat = "###,###,###"
+
+    @BindView(R.id.casesAmount)
+    lateinit var casesAmount: TextView
+    @BindView(R.id.recoveredCasesAmount)
+    lateinit var recoveredCasesAmount: TextView
+    @BindView(R.id.deathCasesAmount)
+    lateinit var deathCasesAmount: TextView
+    @BindView(R.id.swipeToRefresh)
+    lateinit var swipeToRefresh: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +64,7 @@ class CovidCountActivity : AppCompatActivity() {
             .enqueue(callback(deathCasesAmount))
     }
 
-    fun callback(casesAmountTextView: TextView): Callback<List<CovidStat>> {
+    private fun callback(casesAmountTextView: TextView): Callback<List<CovidStat>> {
         return object : Callback<List<CovidStat>> {
             override fun onResponse(call: Call<List<CovidStat>>, response: Response<List<CovidStat>>) {
                 if (response.code() == 200) {
@@ -77,7 +81,7 @@ class CovidCountActivity : AppCompatActivity() {
     fun getReadableAmount(amount: Int): String {
         val nf = NumberFormat.getNumberInstance(Locale.FRANCE)
         val df = nf as DecimalFormat
-        df.applyPattern(AMOUNT_FORMAT)
+        df.applyPattern(amountFormat)
         return df.format(amount)
     }
 }

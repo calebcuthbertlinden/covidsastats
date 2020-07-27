@@ -14,8 +14,8 @@ class CovidServiceImplementation {
 
     companion object {
 
-        private val baseUrl = "https://api.covid19api.com/"
-        private val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        private const val baseUrl = "https://api.covid19api.com/"
+        private const val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         private var instance: CovidServiceImplementation? = null
 
         fun fetchInstance(): CovidServiceImplementation {
@@ -26,7 +26,7 @@ class CovidServiceImplementation {
             }
         }
 
-        fun init(): CovidServiceImplementation {
+        private fun init(): CovidServiceImplementation {
             instance = CovidServiceImplementation()
             instance!!.retrofit = Retrofit.Builder()
                 .baseUrl(baseUrl)
