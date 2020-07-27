@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Covid SA daily stats</string>
+    <string name="active_cases">Active cases</string>
+    <string name="recovered_cases">Recovered cases</string>
+    <string name="death_cases">Deaths</string>
+    <string name="empty">-</string>
+
 </resources>
