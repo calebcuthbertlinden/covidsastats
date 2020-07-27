@@ -8,7 +8,9 @@ import retrofit2.http.Query
 interface CovidService {
 
     @GET("country/south-africa/status/{status}?")
-    fun getCurrentCovidStatsByStatus(@Path("status") status: String, @Query("from") from: String,
-                           @Query("to") to: String): Call<List<CovidStat>>
+    fun getCurrentCovidStatsByStatus(
+        @Path("status") status: String, @Query("from") from: String,
+        @Query("to") to: String
+    ): Call<List<CovidStat>>
 
 }

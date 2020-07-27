@@ -2,7 +2,6 @@ package com.linden.covidsastats
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -11,14 +10,13 @@ import java.time.LocalDateTime
 
 class CovidServiceImplementation {
 
-    var retrofit: Retrofit? = null
+    private var retrofit: Retrofit? = null
 
     companion object {
 
-        val baseUrl = "https://api.covid19api.com/"
-        val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        var instance: CovidServiceImplementation? = null
-        var gson: Gson? = null
+        private val baseUrl = "https://api.covid19api.com/"
+        private val dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        private var instance: CovidServiceImplementation? = null
 
         fun newInstance(): CovidServiceImplementation {
             return if (instance != null) {
@@ -30,12 +28,15 @@ class CovidServiceImplementation {
 
         fun init(): CovidServiceImplementation {
             instance = CovidServiceImplementation()
-            gson = GsonBuilder()
-                .setDateFormat(dateFormat)
-                .create()
             instance!!.retrofit = Retrofit.Builder()
                 .baseUrl(baseUrl)
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(
+                    GsonConverterFactory.create(
+                        GsonBuilder()
+                            .setDateFormat(dateFormat)
+                            .create()
+                    )
+                )
                 .build()
 
             return instance as CovidServiceImplementation
@@ -49,7 +50,8 @@ class CovidServiceImplementation {
         return service!!.getCurrentCovidStatsByStatus(
             status,
             current.minusDays(1).withHour(0).toString(),
-            current.withHour(0).toString())
+            current.withHour(0).toString()
+        )
     }
 
 }
