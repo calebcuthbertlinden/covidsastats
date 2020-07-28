@@ -23,7 +23,8 @@ class CovidCountActivity : AppCompatActivity() {
     private val recovered: String = "recovered"
     private val deaths: String = "deaths"
     private val defaultCountry: String = "south-africa"
-    private val amountFormat = "###,###,###"
+    private val amountFormat: String = "###,###,###"
+    private val currentMonthIndex: Int = 0
 
     @BindView(R.id.casesAmount)
     lateinit var casesAmount: TextView
@@ -64,15 +65,12 @@ class CovidCountActivity : AppCompatActivity() {
 
     private fun callback(casesAmountTextView: TextView): Callback<List<CovidStat>> {
         return object : Callback<List<CovidStat>> {
+            override fun onFailure(call: Call<List<CovidStat>>, t: Throwable) {}
             override fun onResponse(call: Call<List<CovidStat>>, response: Response<List<CovidStat>>) {
                 if (response.code() == 200) {
-                    response.body()?.forEach {
-                        casesAmountTextView.text = getReadableAmount(it.cases!!)
-                    }
+                    casesAmountTextView.text = getReadableAmount(response.body()?.get(currentMonthIndex)?.cases!!)
                 }
             }
-
-            override fun onFailure(call: Call<List<CovidStat>>, t: Throwable) {}
         }
     }
 
