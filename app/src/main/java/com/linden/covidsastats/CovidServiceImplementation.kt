@@ -44,10 +44,11 @@ class CovidServiceImplementation {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getCurrentCases(status: String): Call<List<CovidStat>> {
+    fun getCurrentCases(country: String, status: String): Call<List<CovidStat>> {
         val service = retrofit?.create(CovidService::class.java)
         val current: LocalDateTime = LocalDateTime.now()
         return service!!.getCurrentCovidStatsByStatus(
+            country,
             status,
             current.minusDays(1).withHour(0).toString(),
             current.withHour(0).toString()

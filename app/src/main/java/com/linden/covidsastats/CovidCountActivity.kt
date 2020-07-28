@@ -22,6 +22,7 @@ class CovidCountActivity : AppCompatActivity() {
     private val confirmed: String = "confirmed"
     private val recovered: String = "recovered"
     private val deaths: String = "deaths"
+    private val defaultCountry: String = "south-africa"
     private val amountFormat = "###,###,###"
 
     @BindView(R.id.casesAmount)
@@ -43,7 +44,6 @@ class CovidCountActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         fetchCases()
-
         swipeToRefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorSecondary))
         swipeToRefresh.setColorSchemeColors(Color.WHITE)
         swipeToRefresh.setOnRefreshListener {
@@ -54,13 +54,11 @@ class CovidCountActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun fetchCases() {
-        CovidServiceImplementation.fetchInstance().getCurrentCases(confirmed)
+        CovidServiceImplementation.fetchInstance().getCurrentCases(defaultCountry, confirmed)
             .enqueue(callback(casesAmount))
-
-        CovidServiceImplementation.fetchInstance().getCurrentCases(recovered)
+        CovidServiceImplementation.fetchInstance().getCurrentCases(defaultCountry, recovered)
             .enqueue(callback(recoveredCasesAmount))
-
-        CovidServiceImplementation.fetchInstance().getCurrentCases(deaths)
+        CovidServiceImplementation.fetchInstance().getCurrentCases(defaultCountry, deaths)
             .enqueue(callback(deathCasesAmount))
     }
 
