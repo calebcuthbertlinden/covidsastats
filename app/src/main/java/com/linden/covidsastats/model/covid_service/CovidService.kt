@@ -1,4 +1,4 @@
-package com.linden.covidsastats.mvi.model.covid_service
+package com.linden.covidsastats.model.covid_service
 
 import io.reactivex.Observable
 import retrofit2.http.GET

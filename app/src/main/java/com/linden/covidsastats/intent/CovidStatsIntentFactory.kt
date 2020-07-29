@@ -1,11 +1,11 @@
-package com.linden.covidsastats.mvi.intent
+package com.linden.covidsastats.intent
 
-import com.linden.covidsastats.mvi.model.covid_service.CovidStat
-import com.linden.covidsastats.mvi.model.covid_service.CovidService
-import com.linden.covidsastats.mvi.model.CovidStatViewModel
-import com.linden.covidsastats.mvi.model.CovidStatsModelStore
-import com.linden.covidsastats.mvi.model.CovidStatsState
-import com.linden.covidsastats.mvi.view.CovidStatsEvent
+import com.linden.covidsastats.model.covid_service.CovidStat
+import com.linden.covidsastats.model.covid_service.CovidService
+import com.linden.covidsastats.model.CovidStatViewModel
+import com.linden.covidsastats.model.CovidStatsModelStore
+import com.linden.covidsastats.model.CovidStatsState
+import com.linden.covidsastats.view.CovidStatsEvent
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton

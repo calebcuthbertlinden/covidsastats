@@ -1,4 +1,4 @@
-package com.linden.covidsastats.mvi.view
+package com.linden.covidsastats.view
 
 sealed class CovidStatsEvent {
     object OnFetchStatsEvent : CovidStatsEvent()

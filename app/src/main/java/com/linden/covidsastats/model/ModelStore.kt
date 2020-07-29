@@ -1,7 +1,7 @@
-package com.linden.covidsastats.mvi.model
+package com.linden.covidsastats.model
 
 import com.jakewharton.rxrelay2.PublishRelay
-import com.linden.covidsastats.mvi.intent.Intent
+import com.linden.covidsastats.intent.Intent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observables.ConnectableObservable
 

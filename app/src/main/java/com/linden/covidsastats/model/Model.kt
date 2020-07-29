@@ -1,6 +1,6 @@
-package com.linden.covidsastats.mvi.model
+package com.linden.covidsastats.model
 
-import com.linden.covidsastats.mvi.intent.Intent
+import com.linden.covidsastats.intent.Intent
 import io.reactivex.observables.ConnectableObservable
 
 interface Model<S> {

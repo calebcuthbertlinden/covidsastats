@@ -1,4 +1,4 @@
-package com.linden.covidsastats.mvi.intent
+package com.linden.covidsastats.intent
 
 interface Intent<T> {
     fun reduce(oldState: T): T

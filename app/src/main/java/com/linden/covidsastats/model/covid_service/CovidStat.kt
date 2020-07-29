@@ -1,4 +1,4 @@
-package com.linden.covidsastats.mvi.model.covid_service
+package com.linden.covidsastats.model.covid_service
 
 import com.google.gson.annotations.SerializedName
 

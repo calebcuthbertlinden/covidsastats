@@ -1,4 +1,4 @@
-package com.linden.covidsastats.mvi.view
+package com.linden.covidsastats.view
 
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
