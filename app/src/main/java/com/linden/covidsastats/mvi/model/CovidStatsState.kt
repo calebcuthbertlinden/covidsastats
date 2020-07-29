@@ -5,7 +5,6 @@ sealed class CovidStatsState {
     data class ViewCovidStatsState(
         val covidStats: CovidStatViewModel?,
         val success: Boolean,
-        val cancel: Unit,
         val shouldFetch: Boolean) :
         CovidStatsState()
 

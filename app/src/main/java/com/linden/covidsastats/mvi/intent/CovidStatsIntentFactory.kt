@@ -40,17 +40,18 @@ class CovidStatsIntentFactory @Inject constructor(
             fun retrofitSuccess(loadedStats:List<CovidStat>) = chainedIntent {
                 CovidStatsState.ViewCovidStatsState(
                     covidStats = CovidStatViewModel(activeCases = loadedStats[0].cases!!, recoveredCases = null, deaths = null),
-                    success = true, cancel = Unit,
+                    success = true,
                     shouldFetch = false)
             }
 
             fun retrofitError(throwable:Throwable) = chainedIntent {
-                // Do something with throwable
-                CovidStatsState.ViewCovidStatsState(covidStats = null, success = false, cancel = Unit, shouldFetch = false)
+                // TODO return error message
+                CovidStatsState.ViewCovidStatsState(covidStats = null, success = false, shouldFetch = false)
             }
 
+            // TODO zip function to return recovered and death stats as well
             covidRestApi.getCurrentCovidStatsByStatusAndCountryObservable(
-                defaultCountry, confirmed, "2020-06-01T00:00:00Z", "2020-06-03T00:00:00Z")
+                defaultCountry, confirmed, "2020-07-27T00:00:00Z", "2020-07-28T00:00:00Z")
                 .subscribeOn(Schedulers.io())
                 .subscribe(::retrofitSuccess, ::retrofitError)
 

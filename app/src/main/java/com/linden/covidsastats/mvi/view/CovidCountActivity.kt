@@ -1,10 +1,12 @@
 package com.linden.covidsastats.mvi.view
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -44,12 +46,12 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         super.onResume()
         disposables.add(covidStatsModelStore.modelState().subscribeToState())
 
-//        swipeToRefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorSecondary))
-//        swipeToRefresh.setColorSchemeColors(Color.WHITE)
-//        swipeToRefresh.setOnRefreshListener {
-//            fetchCases()
-//            swipeToRefresh.isRefreshing = false
-//        }
+        swipeToRefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorSecondary))
+        swipeToRefresh.setColorSchemeColors(Color.WHITE)
+        swipeToRefresh.setOnRefreshListener {
+            swipeToRefresh.isRefreshing = false
+            covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent)
+        }
     }
 
     override fun onPause() {
@@ -80,7 +82,7 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
                             }
 
                             !it.success -> {
-                                // Show error state
+                                // TODO show error state
                             }
                         }
                     }
