@@ -15,4 +15,7 @@ interface CovidService {
         @Query("to") to: String
     ): Observable<List<CovidStat>>
 
+    @GET("countries")
+    fun getCountries(): Observable<List<Country>>
+
 }

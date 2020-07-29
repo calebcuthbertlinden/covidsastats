@@ -8,6 +8,25 @@
         android:layout_height="match_parent"
         tools:context=".view.CovidCountActivity">
 
+    <com.google.android.material.textfield.TextInputLayout
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:id="@+id/dropdownMenu"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent">
+
+        <AutoCompleteTextView
+                android:id="@+id/filledExposeDropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="#FFF"
+                android:hint="south-africa"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <ProgressBar
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -34,7 +53,7 @@
                           app:layout_constraintLeft_toLeftOf="parent"
                           app:layout_constraintRight_toRightOf="parent"
                           app:layout_constraintTop_toTopOf="parent"
-                          android:layout_marginTop="50dp"
+                          android:layout_marginTop="75dp"
                           android:orientation="vertical">
 
                 <TextView
