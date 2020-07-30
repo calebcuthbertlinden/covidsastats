@@ -11,22 +11,19 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
-typealias BaseUrl = String
-
 object CovidServiceApiModule : Module() {
     init {
-        bind(BaseUrl::class.java).toInstance("https://api.covid19api.com/")
         bind(CovidService::class.java).toProvider(CovidServiceProvider::class.java)
     }
 }
 
 @Singleton
 @ProvidesSingletonInScope
-class CovidServiceProvider @Inject constructor(baseUrl: BaseUrl) : Provider<CovidService> {
+class CovidServiceProvider @Inject constructor() : Provider<CovidService> {
     override fun get(): CovidService = retrofit.create(CovidService::class.java)
 
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
+        .baseUrl("https://api.covid19api.com/")
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(
             GsonConverterFactory.create(

@@ -8,6 +8,8 @@ import com.linden.covidsastats.model.covid_service.Country
 import com.linden.covidsastats.model.covid_service.CovidService
 import com.linden.covidsastats.model.covid_service.CovidStat
 import com.linden.covidsastats.view.CovidStatsEvent
+import io.reactivex.Observable
+import io.reactivex.functions.Function3
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,19 +42,30 @@ class CovidStatsIntentFactory @Inject constructor(
 
             fun retrofitSuccess(loadedStats:List<CovidStat>) = chainedIntent {
                 CovidStatsState.ViewCovidStatsState(
-                    covidStats = CovidStatViewModel(activeCases = loadedStats[0].cases!!, recoveredCases = null, deaths = null),
+                    covidStats = CovidStatViewModel(
+                        activeCases = loadedStats[0].cases!!,
+                        recoveredCases = loadedStats[1].cases!!,
+                        deaths = loadedStats[2].cases!!),
                     success = true,
-                    shouldFetch = false)
+                    shouldFetch = false,
+                    errorMessage = null)
             }
 
             fun retrofitError(throwable:Throwable) = chainedIntent {
                 // TODO return error message
-                CovidStatsState.ViewCovidStatsState(covidStats = null, success = false, shouldFetch = false)
+                CovidStatsState.ViewCovidStatsState(covidStats = null, success = false, shouldFetch = false, errorMessage = throwable.message)
             }
 
-            // TODO zip function to return recovered and death stats as well
-            covidRestApi.getCurrentCovidStatsByStatusAndCountryObservable(
-                viewEvent.country, confirmed, "2020-07-27T00:00:00Z", "2020-07-28T00:00:00Z")
+            val activeObservable = covidRestApi.getCurrentCovidStatsByStatusAndCountryObservable(
+                viewEvent.country, confirmed, "2020-07-28T00:00:00Z", "2020-07-29T00:00:00Z")
+            val recoveredObservable = covidRestApi.getCurrentCovidStatsByStatusAndCountryObservable(
+                viewEvent.country, recovered, "2020-07-28T00:00:00Z", "2020-07-29T00:00:00Z")
+            val deathsObservable = covidRestApi.getCurrentCovidStatsByStatusAndCountryObservable(
+                viewEvent.country, deaths, "2020-07-28T00:00:00Z", "2020-07-29T00:00:00Z")
+
+            Observable.zip(activeObservable, recoveredObservable, deathsObservable,
+                Function3<List<CovidStat>, List<CovidStat>, List<CovidStat>, List<CovidStat>>
+                { active, recovered, deaths -> listOf(active[0], recovered[0], deaths[0]) })
                 .subscribeOn(Schedulers.io())
                 .subscribe(::retrofitSuccess, ::retrofitError)
 
@@ -69,6 +82,7 @@ class CovidStatsIntentFactory @Inject constructor(
 
             fun retrofitError(throwable:Throwable) = chainedIntent {
                 // TODO return error message
+                println(throwable.message)
                 CovidStatsState.ViewCountriesViewState(countries = listOf(CovidCountryViewModel(countryName = "south-africa")))
             }
 

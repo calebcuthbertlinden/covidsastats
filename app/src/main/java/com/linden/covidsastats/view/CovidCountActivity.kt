@@ -57,6 +57,7 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         super.onResume()
         disposables.add(covidStatsModelRepository.modelState().subscribeToState())
 
+        dropDownMenu.hint = "south-africa: search for your country here"
         swipeToRefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorSecondary))
         swipeToRefresh.setColorSchemeColors(Color.WHITE)
         swipeToRefresh.setOnRefreshListener {
@@ -99,7 +100,7 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
                                     it.covidStats.deaths)
                             }
                             !it.success -> {
-                                // TODO show error state
+                                loadingBar.visibility = View.GONE
                             }
                         }
                     }
@@ -113,11 +114,11 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         }
     }
 
-    fun presentLoading() {
+    private fun presentLoading() {
         loadingBar.visibility = View.VISIBLE
     }
 
-    fun presentCovidStats(activeCases: Int?, recoveredCases: Int?, deaths: Int?) {
+    private fun presentCovidStats(activeCases: Int?, recoveredCases: Int?, deaths: Int?) {
         loadingBar.visibility = View.GONE
         if (activeCases != null) {
             casesAmount.text = getReadableAmount(activeCases)
@@ -130,15 +131,15 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         }
     }
 
-    fun presentCountriesMenu(countries: List<CovidCountryViewModel>) {
-        val countryNames = countries.map { v -> v.countryName }
+    private fun presentCountriesMenu(countries: List<CovidCountryViewModel>) {
+        val countryNames = countries.map { viewModel -> viewModel.countryName }
         dropDownMenu.setAdapter(ArrayAdapter(this, R.layout.dropdown_item, countryNames))
         country = dropDownMenu.text.toString()
-        dropDownMenu.setOnItemClickListener { adapterView, view, position, l ->
+        dropDownMenu.setOnItemClickListener { _, _, _, _ ->
             covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent(dropDownMenu.text.toString()))}
     }
 
-    fun getReadableAmount(amount: Int): String {
+    private fun getReadableAmount(amount: Int): String {
         val nf = NumberFormat.getNumberInstance(Locale.FRANCE)
         val df = nf as DecimalFormat
         df.applyPattern(amountFormat)
