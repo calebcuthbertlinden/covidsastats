@@ -1,4 +1,4 @@
-package com.linden.covidsastats.model
+package com.linden.covidsastats.model.view_model
 
 import java.util.*
 

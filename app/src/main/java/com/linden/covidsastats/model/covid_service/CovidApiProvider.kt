@@ -1,7 +1,6 @@
-package com.linden.covidsastats.model
+package com.linden.covidsastats.model.covid_service
 
 import com.google.gson.GsonBuilder
-import com.linden.covidsastats.model.covid_service.CovidService
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
