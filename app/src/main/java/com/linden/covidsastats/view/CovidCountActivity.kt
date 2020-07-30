@@ -1,7 +1,6 @@
 package com.linden.covidsastats.view
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -11,11 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import butterknife.ButterKnife
-import butterknife.OnItemSelected
-import com.google.android.material.textfield.TextInputLayout
 import com.linden.covidsastats.R
-import com.linden.covidsastats.intent.CovidStatsIntentFactory
-import com.linden.covidsastats.model.CovidCountryViewModel
+import com.linden.covidsastats.intent.CovidStatsIntentPresenter
+import com.linden.covidsastats.model.view_model.CovidCountryViewModel
 import com.linden.covidsastats.model.CovidStatsModelRepository
 import com.linden.covidsastats.model.CovidStatsState
 import io.reactivex.Observable
@@ -24,7 +21,6 @@ import io.reactivex.disposables.Disposable
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.smoothie.module.SmoothieActivityModule
-import java.security.AccessController.getContext
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
@@ -33,7 +29,7 @@ import javax.inject.Inject
 class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState> {
 
     @Inject lateinit var covidStatsModelRepository: CovidStatsModelRepository
-    @Inject lateinit var covidStatsIntentFactory: CovidStatsIntentFactory
+    @Inject lateinit var covidStatsIntentPresenter: CovidStatsIntentPresenter
 
     private val disposables = CompositeDisposable()
     private val amountFormat: String = "###,###,###"
@@ -62,7 +58,7 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         swipeToRefresh.setColorSchemeColors(Color.WHITE)
         swipeToRefresh.setOnRefreshListener {
             swipeToRefresh.isRefreshing = false
-            covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent(country))
+            covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(country))
         }
     }
 
@@ -90,8 +86,8 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
                     is CovidStatsState.ViewCovidStatsState -> {
                         when {
                             it.shouldFetch -> {
-                                covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent(country))
-                                covidStatsIntentFactory.process(CovidStatsEvent.OnFetchCountriesEvent)
+                                covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(country))
+                                covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchCountriesEvent)
                             }
                             it.covidStats != null -> {
                                 presentCovidStats(
@@ -134,9 +130,9 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
     private fun presentCountriesMenu(countries: List<CovidCountryViewModel>) {
         val countryNames = countries.map { viewModel -> viewModel.countryName }
         dropDownMenu.setAdapter(ArrayAdapter(this, R.layout.dropdown_item, countryNames))
-        country = dropDownMenu.text.toString()
         dropDownMenu.setOnItemClickListener { _, _, _, _ ->
-            covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent(dropDownMenu.text.toString()))}
+            country = dropDownMenu.text.toString()
+            covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(dropDownMenu.text.toString()))}
     }
 
     private fun getReadableAmount(amount: Int): String {

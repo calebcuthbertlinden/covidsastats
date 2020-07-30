@@ -1,7 +1,7 @@
 package com.linden.covidsastats.intent
 
-import com.linden.covidsastats.model.CovidCountryViewModel
-import com.linden.covidsastats.model.CovidStatViewModel
+import com.linden.covidsastats.model.view_model.CovidCountryViewModel
+import com.linden.covidsastats.model.view_model.CovidStatViewModel
 import com.linden.covidsastats.model.CovidStatsModelRepository
 import com.linden.covidsastats.model.CovidStatsState
 import com.linden.covidsastats.model.covid_service.Country
@@ -15,7 +15,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CovidStatsIntentFactory @Inject constructor(
+class CovidStatsIntentPresenter @Inject constructor(
     private val covidRestApi: CovidService,
     private val covidModelRepository: CovidStatsModelRepository) {
 
@@ -45,7 +45,8 @@ class CovidStatsIntentFactory @Inject constructor(
                     covidStats = CovidStatViewModel(
                         activeCases = loadedStats[0].cases!!,
                         recoveredCases = loadedStats[1].cases!!,
-                        deaths = loadedStats[2].cases!!),
+                        deaths = loadedStats[2].cases!!
+                    ),
                     success = true,
                     shouldFetch = false,
                     errorMessage = null)
@@ -77,20 +78,32 @@ class CovidStatsIntentFactory @Inject constructor(
         return intent {
 
             fun retrofitSuccess(loadedCountries:List<Country>) = chainedIntent {
-                CovidStatsState.ViewCountriesViewState(countries = loadedCountries.map { country -> CovidCountryViewModel(countryName = country.slug)})
+                CovidStatsState.ViewCountriesViewState(countries = loadedCountries.map { country ->
+                    CovidCountryViewModel(
+                        countryName = country.slug
+                    )
+                })
             }
 
             fun retrofitError(throwable:Throwable) = chainedIntent {
                 // TODO return error message
                 println(throwable.message)
-                CovidStatsState.ViewCountriesViewState(countries = listOf(CovidCountryViewModel(countryName = "south-africa")))
+                CovidStatsState.ViewCountriesViewState(countries = listOf(
+                    CovidCountryViewModel(
+                        countryName = "south-africa"
+                    )
+                ))
             }
 
             covidRestApi.getCountries()
                 .subscribeOn(Schedulers.io())
                 .subscribe(::retrofitSuccess, ::retrofitError)
 
-            CovidStatsState.ViewCountriesViewState(countries = listOf(CovidCountryViewModel(countryName = "south-africa")))
+            CovidStatsState.ViewCountriesViewState(countries = listOf(
+                CovidCountryViewModel(
+                    countryName = "south-africa"
+                )
+            ))
 
         }
     }

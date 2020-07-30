@@ -1,5 +1,8 @@
 package com.linden.covidsastats.model
 
+import com.linden.covidsastats.model.view_model.CovidCountryViewModel
+import com.linden.covidsastats.model.view_model.CovidStatViewModel
+
 sealed class CovidStatsState {
 
     data class ViewCovidStatsState(
