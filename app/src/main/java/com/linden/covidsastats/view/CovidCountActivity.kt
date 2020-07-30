@@ -37,7 +37,7 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
 
     private val disposables = CompositeDisposable()
     private val amountFormat: String = "###,###,###"
-    private val country: String = "south-africa"
+    private var country: String = "south-africa"
 
     @BindView(R.id.casesAmount) lateinit var casesAmount: TextView
     @BindView(R.id.recoveredCasesAmount) lateinit var recoveredCasesAmount: TextView
@@ -133,6 +133,7 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
     fun presentCountriesMenu(countries: List<CovidCountryViewModel>) {
         val countryNames = countries.map { v -> v.countryName }
         dropDownMenu.setAdapter(ArrayAdapter(this, R.layout.dropdown_item, countryNames))
+        country = dropDownMenu.text.toString()
         dropDownMenu.setOnItemClickListener { adapterView, view, position, l ->
             covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent(dropDownMenu.text.toString()))}
     }
