@@ -54,7 +54,7 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         super.onResume()
         disposables.add(covidStatsModelRepository.modelState().subscribeToState())
 
-        dropDownMenu.hint = "south-africa: search for your country here"
+        dropDownMenu.hint = "Enter countries name..."
         swipeToRefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorSecondary))
         swipeToRefresh.setColorSchemeColors(Color.WHITE)
         swipeToRefresh.setOnRefreshListener {
