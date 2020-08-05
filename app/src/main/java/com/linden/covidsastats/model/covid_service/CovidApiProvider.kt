@@ -22,7 +22,7 @@ class CovidServiceProvider @Inject constructor() : Provider<CovidService> {
     override fun get(): CovidService = retrofit.create(CovidService::class.java)
 
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.covid19api.com/")
+        .baseUrl("https://covidapi.info/")
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(
             GsonConverterFactory.create(

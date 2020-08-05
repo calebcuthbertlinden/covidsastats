@@ -14,7 +14,7 @@ sealed class CovidStatsState {
 
     data class Loading(var isLoading: Boolean) : CovidStatsState()
 
-    data class ViewCountriesViewState(var countries: List<CovidCountryViewModel>) : CovidStatsState()
+    data class ViewCountriesViewState(var countries: List<CovidCountryViewModel?>) : CovidStatsState()
 }
 
 

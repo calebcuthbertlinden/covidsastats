@@ -33,7 +33,8 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
 
     private val disposables = CompositeDisposable()
     private val amountFormat: String = "###,###,###"
-    private var country: String = "south-africa"
+    private var country: String? = "zar"
+    private var countries: List<CovidCountryViewModel?>? = null
 
     @BindView(R.id.casesAmount) lateinit var casesAmount: TextView
     @BindView(R.id.recoveredCasesAmount) lateinit var recoveredCasesAmount: TextView
@@ -58,7 +59,7 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         swipeToRefresh.setColorSchemeColors(Color.WHITE)
         swipeToRefresh.setOnRefreshListener {
             swipeToRefresh.isRefreshing = false
-            covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(country))
+            covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(country!!))
         }
     }
 
@@ -86,13 +87,13 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
                     is CovidStatsState.ViewCovidStatsState -> {
                         when {
                             it.shouldFetch -> {
-                                covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(country))
+                                covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(country!!))
                                 covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchCountriesEvent)
                             }
                             it.covidStats != null -> {
                                 presentCovidStats(
-                                    it.covidStats.activeCases,
-                                    it.covidStats.recoveredCases,
+                                    it.covidStats.confirmed,
+                                    it.covidStats.recovered,
                                     it.covidStats.deaths)
                             }
                             !it.success -> {
@@ -127,12 +128,13 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         }
     }
 
-    private fun presentCountriesMenu(countries: List<CovidCountryViewModel>) {
-        val countryNames = countries.map { viewModel -> viewModel.countryName }
+    private fun presentCountriesMenu(fetchedCountries: List<CovidCountryViewModel?>) {
+        countries = fetchedCountries
+        val countryNames = fetchedCountries.map { viewModel -> viewModel!!.countryName }
         dropDownMenu.setAdapter(ArrayAdapter(this, R.layout.dropdown_item, countryNames))
         dropDownMenu.setOnItemClickListener { _, _, _, _ ->
-            country = dropDownMenu.text.toString()
-            covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(dropDownMenu.text.toString()))}
+            country = getCountryCode(dropDownMenu.text.toString())
+            covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(getCountryCode(dropDownMenu.text.toString())!!))}
     }
 
     private fun getReadableAmount(amount: Int): String {
@@ -146,5 +148,10 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         return Toothpick.openScopes(activity.application, activity).apply {
             installModules(SmoothieActivityModule(activity))
         }
+    }
+
+    private fun getCountryCode(countryName: String): String? {
+        countries?.forEach { if (it!!.countryName == countryName) return it.countryCode }
+        return ""
     }
 }
