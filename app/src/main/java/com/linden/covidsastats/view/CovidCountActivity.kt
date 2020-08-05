@@ -1,7 +1,6 @@
 package com.linden.covidsastats.view
 
 import android.app.Activity
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -11,11 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import butterknife.BindView
 import butterknife.ButterKnife
-import butterknife.OnItemSelected
-import com.google.android.material.textfield.TextInputLayout
 import com.linden.covidsastats.R
-import com.linden.covidsastats.intent.CovidStatsIntentFactory
-import com.linden.covidsastats.model.CovidCountryViewModel
+import com.linden.covidsastats.intent.CovidStatsIntentPresenter
+import com.linden.covidsastats.model.view_model.CovidCountryViewModel
 import com.linden.covidsastats.model.CovidStatsModelRepository
 import com.linden.covidsastats.model.CovidStatsState
 import io.reactivex.Observable
@@ -24,7 +21,6 @@ import io.reactivex.disposables.Disposable
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.smoothie.module.SmoothieActivityModule
-import java.security.AccessController.getContext
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
@@ -33,11 +29,12 @@ import javax.inject.Inject
 class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState> {
 
     @Inject lateinit var covidStatsModelRepository: CovidStatsModelRepository
-    @Inject lateinit var covidStatsIntentFactory: CovidStatsIntentFactory
+    @Inject lateinit var covidStatsIntentPresenter: CovidStatsIntentPresenter
 
     private val disposables = CompositeDisposable()
     private val amountFormat: String = "###,###,###"
-    private val country: String = "south-africa"
+    private var country: String? = "zar"
+    private var countries: List<CovidCountryViewModel?>? = null
 
     @BindView(R.id.casesAmount) lateinit var casesAmount: TextView
     @BindView(R.id.recoveredCasesAmount) lateinit var recoveredCasesAmount: TextView
@@ -57,11 +54,12 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         super.onResume()
         disposables.add(covidStatsModelRepository.modelState().subscribeToState())
 
+        dropDownMenu.hint = "Enter countries name..."
         swipeToRefresh.setProgressBackgroundColorSchemeColor(ContextCompat.getColor(this, R.color.colorSecondary))
         swipeToRefresh.setColorSchemeColors(Color.WHITE)
         swipeToRefresh.setOnRefreshListener {
             swipeToRefresh.isRefreshing = false
-            covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent(country))
+            covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(country!!))
         }
     }
 
@@ -89,17 +87,17 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
                     is CovidStatsState.ViewCovidStatsState -> {
                         when {
                             it.shouldFetch -> {
-                                covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent(country))
-                                covidStatsIntentFactory.process(CovidStatsEvent.OnFetchCountriesEvent)
+                                covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(country!!))
+                                covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchCountriesEvent)
                             }
                             it.covidStats != null -> {
                                 presentCovidStats(
-                                    it.covidStats.activeCases,
-                                    it.covidStats.recoveredCases,
+                                    it.covidStats.confirmed,
+                                    it.covidStats.recovered,
                                     it.covidStats.deaths)
                             }
                             !it.success -> {
-                                // TODO show error state
+                                loadingBar.visibility = View.GONE
                             }
                         }
                     }
@@ -113,11 +111,11 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         }
     }
 
-    fun presentLoading() {
+    private fun presentLoading() {
         loadingBar.visibility = View.VISIBLE
     }
 
-    fun presentCovidStats(activeCases: Int?, recoveredCases: Int?, deaths: Int?) {
+    private fun presentCovidStats(activeCases: Int?, recoveredCases: Int?, deaths: Int?) {
         loadingBar.visibility = View.GONE
         if (activeCases != null) {
             casesAmount.text = getReadableAmount(activeCases)
@@ -130,14 +128,16 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         }
     }
 
-    fun presentCountriesMenu(countries: List<CovidCountryViewModel>) {
-        val countryNames = countries.map { v -> v.countryName }
+    private fun presentCountriesMenu(fetchedCountries: List<CovidCountryViewModel?>) {
+        countries = fetchedCountries
+        val countryNames = fetchedCountries.map { viewModel -> viewModel!!.countryName }
         dropDownMenu.setAdapter(ArrayAdapter(this, R.layout.dropdown_item, countryNames))
-        dropDownMenu.setOnItemClickListener { adapterView, view, position, l ->
-            covidStatsIntentFactory.process(CovidStatsEvent.OnFetchStatsEvent(dropDownMenu.text.toString()))}
+        dropDownMenu.setOnItemClickListener { _, _, _, _ ->
+            country = getCountryCode(dropDownMenu.text.toString())
+            covidStatsIntentPresenter.process(CovidStatsEvent.OnFetchStatsEvent(getCountryCode(dropDownMenu.text.toString())!!))}
     }
 
-    fun getReadableAmount(amount: Int): String {
+    private fun getReadableAmount(amount: Int): String {
         val nf = NumberFormat.getNumberInstance(Locale.FRANCE)
         val df = nf as DecimalFormat
         df.applyPattern(amountFormat)
@@ -148,5 +148,10 @@ class CovidCountActivity : AppCompatActivity(), StateSubscriber<CovidStatsState>
         return Toothpick.openScopes(activity.application, activity).apply {
             installModules(SmoothieActivityModule(activity))
         }
+    }
+
+    private fun getCountryCode(countryName: String): String? {
+        countries?.forEach { if (it!!.countryName == countryName) return it.countryCode }
+        return ""
     }
 }

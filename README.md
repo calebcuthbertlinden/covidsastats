@@ -1,5 +1,5 @@
 # covidsastats
-A simple one page Kotlin app showing the current day's COVID statistics
+A simple one page Kotlin app, built using MVI architecture, showing the current day's COVID statistics for the selected country
 ---------------------------------------------------------
 
 COVID-19 API used: https://api.covid19api.com/

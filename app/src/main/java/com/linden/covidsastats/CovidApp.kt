@@ -1,7 +1,7 @@
 package com.linden.covidsastats
 
 import android.app.Application
-import com.linden.covidsastats.model.CovidServiceApiModule
+import com.linden.covidsastats.model.covid_service.CovidServiceApiModule
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.smoothie.module.SmoothieApplicationModule

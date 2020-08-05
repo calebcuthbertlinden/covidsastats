@@ -1,7 +1,6 @@
-package com.linden.covidsastats.model
+package com.linden.covidsastats.model.covid_service
 
 import com.google.gson.GsonBuilder
-import com.linden.covidsastats.model.covid_service.CovidService
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -11,22 +10,19 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 
-typealias BaseUrl = String
-
 object CovidServiceApiModule : Module() {
     init {
-        bind(BaseUrl::class.java).toInstance("https://api.covid19api.com/")
         bind(CovidService::class.java).toProvider(CovidServiceProvider::class.java)
     }
 }
 
 @Singleton
 @ProvidesSingletonInScope
-class CovidServiceProvider @Inject constructor(baseUrl: BaseUrl) : Provider<CovidService> {
+class CovidServiceProvider @Inject constructor() : Provider<CovidService> {
     override fun get(): CovidService = retrofit.create(CovidService::class.java)
 
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
+        .baseUrl("https://covidapi.info/")
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(
             GsonConverterFactory.create(

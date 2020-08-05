@@ -6,5 +6,5 @@ import javax.inject.Singleton
 @Singleton
 class CovidStatsModelRepository @Inject constructor() :
     ModelStore<CovidStatsState>(
-        CovidStatsState.ViewCovidStatsState(covidStats = null, success = true, shouldFetch = true)
+        CovidStatsState.ViewCovidStatsState(covidStats = null, success = true, shouldFetch = true, errorMessage = null)
     )
