@@ -35,10 +35,12 @@
           app:layout_constraintTop_toBottomOf="@id/dropdownMenu"/>
 
     <ProgressBar
-            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" android:id="@+id/loadingBar" android:indeterminate="true"
-            android:layout_width="match_parent" android:layout_height="match_parent"/>
+            android:padding="4dp"
+            app:layout_constraintTop_toTopOf="@id/dropdownMenu"
+            app:layout_constraintBottom_toBottomOf="@id/dropdownMenu" android:id="@+id/loadingBar"
+            android:indeterminate="true"
+            android:layout_width="50dp" android:layout_height="50dp"/>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             app:layout_constraintLeft_toLeftOf="parent"
